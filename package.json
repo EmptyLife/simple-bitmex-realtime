@@ -12,6 +12,6 @@
   "author": "EmptyLife",
   "license": "ISC",
   "dependencies": {
-    "simple-web-socket-client": "EmptyLife/simple-web-socket-client-reconnect"
+    "simple-web-socket-client-reconnect": "EmptyLife/simple-web-socket-client-reconnect"
   }
 }
