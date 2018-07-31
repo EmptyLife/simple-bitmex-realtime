@@ -36,7 +36,7 @@ class Realtime extends EventEmiiter {
 		this.socket.on("message", this._parseMessage.bind(this));
 		
 		this.socket.on("open", () => {
-			console.log("open", this.subscribeArray)
+			//console.log("open", this.subscribeArray)
 
 			for(const [table, symbol] of this.subscribeArray) {
 				this._sendCmd("subscribe", [`${table}:${symbol}`]);
@@ -47,19 +47,19 @@ class Realtime extends EventEmiiter {
 	
 		this.heartbeat = new Heartbeat(this.socket);
 		this.heartbeat.on("ping", () => {
-			console.log("heartbeat:ping")
+			//console.log("heartbeat:ping")
 			if ( this.socket.isOpened() ) {
 				this.socket.send("ping");
 			}
 		});
 		this.heartbeat.on("pong", () => {
-			console.log("heartbeat:pong")
+			//console.log("heartbeat:pong")
 			if ( this.socket.isOpened() ) {
 				this.socket.send("pong");
 			}
 		});
 		this.heartbeat.on("reconnect", () => {
-			console.log("heartbeat:reconnect")
+			//console.log("heartbeat:reconnect")
 			
 			if ( !this.socket.isClosed() ) {
 				this.socket.reconnect();
