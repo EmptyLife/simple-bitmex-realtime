@@ -114,7 +114,7 @@ class Realtime extends EventEmiiter {
 		} else
 		if ( "status" in message ) {
 			if ( message.status === 400 ) {
-				this.emit("error", message.error);
+				this.emit("error", new Error(message.error));
 			}
 			if ( message.status === 401 ) {
 				this.emit("error", new Error("API Key incorrect, please check and restart."));
