@@ -62,7 +62,7 @@ class Realtime extends EventEmiiter {
 			//console.log("heartbeat:reconnect")
 			
 			if ( !this.socket.isClosed() ) {
-				this.socket.reconnect();
+				this.socket.reopen();
 			}
 		});
 	
@@ -71,6 +71,7 @@ class Realtime extends EventEmiiter {
 		this.socket.on("close", (...args) => this.emit("close", ...args));
 		this.socket.on("error", (...args) => this.emit("error", ...args));
 		this.socket.on("reconnect", (...args) => this.emit("reconnect", ...args));
+		this.socket.on("reopen", (...args) => this.emit("reopen", ...args));
 	}
 	
 	_getUrl() {
