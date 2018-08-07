@@ -87,7 +87,8 @@ class Realtime extends EventEmiiter {
 	isOpened(...args) {return this.socket.isOpened(...args);}
 	isClosed(...args) {return this.socket.isClosed(...args);}
 	send(...args) {return this.socket.send(...args);}
-	reconnect(...args) {return this.socket.reconnect(...args);}
+	reconnect(...args) {return this.socket.reopen(...args);}
+	reopen(...args) {return this.socket.reopen(...args);}
 	close() {
 		this.socket.close();
 	}
