@@ -1,17 +1,19 @@
 
-const EventEmiiter = require("events")
+const EventEmitter = require("events")
 const assert = require("assert")
 const WebSocketClientReconnect = require("simple-web-socket-client-reconnect")
 const DeltaParser = require("./lib/deltaParser")
 const SignMessage = require("./lib/SignMessage")
-const Heartbeat = require("./lib/Heartbeat")
+const Heartbeat = require("simple-realtime-helper-heartbeat")
 
 
 const URL = "wss://www.bitmex.com/realtime";
 const URL_TESTNET = "wss://testnet.bitmex.com/realtime";
 const NO_SYMBOL_TABLES = [ 'account', 'affiliate', 'funds', 'insurance', 'margin', 'transact', 'wallet', 'announcement', 'connected', 'chat', 'publicNotifications', 'privateNotifications' ];
 
-class Realtime extends EventEmiiter {
+
+
+class Realtime extends EventEmitter {
 	constructor(options) {
 		super();
 		
@@ -43,35 +45,28 @@ class Realtime extends EventEmiiter {
 			}
 		});
 	
-	
-	
 		this.heartbeat = new Heartbeat(this.socket);
-		this.heartbeat.on("ping", () => {
-			//console.log("heartbeat:ping")
-			if ( this.socket.isOpened() ) {
-				this.socket.send("ping");
-			}
-		});
-		this.heartbeat.on("pong", () => {
-			//console.log("heartbeat:pong")
-			if ( this.socket.isOpened() ) {
-				this.socket.send("pong");
-			}
+		this.heartbeat.on("send:ping", () => {
+			//console.log("heartbeat:send:ping", Date.now())
+			this.socket.isOpened() && this.socket.send("ping");
 		});
 		this.heartbeat.on("reconnect", () => {
 			//console.log("heartbeat:reconnect")
-			
-			if ( !this.socket.isClosed() ) {
-				this.socket.reopen();
-			}
+			(!this.socket.isClosed()) && this.socket.reopen();
+		});
+		this.heartbeat.on("send:ping", () => {
+			//console.log("heartbeat:ping")
+			this.socket.isOpened() && this.socket.send("ping");
+		});
+		this.heartbeat.on("ping", (info) => {
+			//console.log("ping", info)
+			this.emit("ping", info.time, info.ping);
 		});
 	
 	
-		this.socket.on("open", (...args) => this.emit("open", ...args));
-		this.socket.on("close", (...args) => this.emit("close", ...args));
-		this.socket.on("error", (...args) => this.emit("error", ...args));
-		this.socket.on("reconnect", (...args) => this.emit("reconnect", ...args));
-		this.socket.on("reopen", (...args) => this.emit("reopen", ...args));
+		["open", "close", "error", "reopen", "reconnect"].forEach(eventName => {
+			this.socket.on(eventName, (...args) => this.emit(eventName, ...args));
+		});
 	}
 	
 	_getUrl() {
@@ -97,6 +92,12 @@ class Realtime extends EventEmiiter {
 		this.socket.send(JSON.stringify({op: cmd, args}));
 	}
 	_parseMessage(message) {
+		if ( message === "pong" ) {
+			this.heartbeat.emit("recv:pong");
+		} else if ( message === "ping" ) {
+			this.socket.isOpened() && this.socket.send("pong");
+		}
+
 		try {
 			message = JSON.parse(message);
 			assert(message instanceof Object)
