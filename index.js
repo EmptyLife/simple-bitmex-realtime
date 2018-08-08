@@ -60,7 +60,7 @@ class Realtime extends EventEmitter {
 		});
 		this.heartbeat.on("ping", (info) => {
 			//console.log("ping", info)
-			this.emit("ping", info.time, info.ping);
+			this.emit("ping", {time: info.time, ping: info.ping});
 		});
 	
 	
