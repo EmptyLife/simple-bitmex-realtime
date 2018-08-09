@@ -54,10 +54,6 @@ class Realtime extends EventEmitter {
 			//console.log("heartbeat:reconnect")
 			(!this.socket.isClosed()) && this.socket.reopen();
 		});
-		this.heartbeat.on("send:ping", () => {
-			//console.log("heartbeat:ping")
-			this.socket.isOpened() && this.socket.send("ping");
-		});
 		this.heartbeat.on("ping", (info) => {
 			//console.log("ping", info)
 			this.emit("ping", {time: info.time, ping: info.ping});
