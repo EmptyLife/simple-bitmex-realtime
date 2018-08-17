@@ -3,7 +3,7 @@ const EventEmitter = require("events")
 const assert = require("assert")
 const WebSocketClientReconnect = require("simple-web-socket-client-reconnect")
 const DeltaParser = require("./lib/deltaParser")
-const SignMessage = require("./lib/SignMessage")
+const SignMessage = require("./lib/signMessage")
 const Heartbeat = require("simple-realtime-helper-heartbeat")
 
 
