@@ -3,7 +3,7 @@ const EventEmitter = require("events")
 const assert = require("assert")
 const WebSocketClientReconnect = require("simple-web-socket-client-reconnect")
 const DeltaParser = require("./lib/deltaParser")
-const SignMessage = require("./lib/signMessage")
+const SignMessage = require("./lib/SignMessage")
 const Heartbeat = require("simple-realtime-helper-heartbeat")
 
 
@@ -35,6 +35,10 @@ class Realtime extends EventEmitter {
 		this.socket = new WebSocketClientReconnect(this._getUrl(), {
 			reconnect: this.options.reconnect
 		});
+		this.socket.on("reopen", () => {
+			this.socket.url = this._getUrl();
+		});
+		
 		this.socket.on("message", this._parseMessage.bind(this));
 		
 		this.socket.on("open", () => {
